@@ -19,7 +19,7 @@ func main() {
 }
 
 func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Request) {
-	width, height, path := ParseSizeParam(params["_1"])
+	width, height, path := ParsePath(params["_1"])
 
 	bucket := GetBucket()
 	blob, err := GetImage(bucket, path)
@@ -33,19 +33,24 @@ func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Reque
 }
 
 // @args p [string] 100x100
-func ParseSizeParam(p string) (int, int, string) {
+func ParsePath(p string) (int, int, string) {
 	path := strings.Split(p, "/")
 	name := path[len(path) - 1]
 	nameArr := strings.Split(name, ".")
 	sizeParam := nameArr[1]
-	sizeArr := strings.Split(sizeParam, "x")
-	width, _ := strconv.Atoi(sizeArr[0])
-	height, _ := strconv.Atoi(sizeArr[1])
+	width, height := ParseSizeParam(sizeParam)
 	fname := nameArr[0] + "." + nameArr[2]
 	path[len(path) - 1] = fname
 	imgPath := strings.Join(path, "/")
 
 	return width, height, imgPath
+}
+
+func ParseSizeParam(p string) (int, int) {
+	sizeArr := strings.Split(p, "x")
+	width, _ := strconv.Atoi(sizeArr[0])
+	height, _ := strconv.Atoi(sizeArr[1])
+	return width, height
 }
 
 func WriteNotFound(w http.ResponseWriter) {
