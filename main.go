@@ -22,7 +22,7 @@ func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Reque
 	width, height, path := ParsePath(params["_1"])
 
 	bucket := GetBucket()
-	blob, err := GetImage(bucket, path)
+	blob, err := bucket.Get(path)
 	if err != nil {
 		WriteNotFound(w)
 		return
@@ -65,13 +65,8 @@ func GetBucket() *s3.Bucket {
 		panic(err.Error())
 	}
 
-	s := s3.New(auth, aws.APNortheast)
-	return s.Bucket("kigotest2")
-}
-
-func GetImage(bucket *s3.Bucket, path string) ([]byte, error) {
-	blob, err := bucket.Get(path)
-	return blob, err
+	s := s3.New(auth, aws.USEast)
+	return s.Bucket("filmapp-development")
 }
 
 func Resize(w, h uint, blob []byte) []byte {
