@@ -7,7 +7,6 @@ import(
 	"github.com/crowdmob/goamz/s3"
 	"strings"
 	"strconv"
-	"log"
 	"net/http"
 )
 
@@ -20,7 +19,22 @@ func main() {
 }
 
 func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(params["_1"], "/")
+	width, height, path := ParseSizeParam(params["_1"])
+
+	bucket := GetBucket()
+	blob, err := GetImage(bucket, path)
+	if err != nil {
+		WriteNotFound(w)
+		return
+	}
+	image := Resize(uint(width), uint(height), blob)
+
+	w.Write(image)
+}
+
+// @args p [string] 100x100
+func ParseSizeParam(p string) (int, int, string) {
+	path := strings.Split(p, "/")
 	name := path[len(path) - 1]
 	nameArr := strings.Split(name, ".")
 	sizeParam := nameArr[1]
@@ -31,21 +45,7 @@ func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Reque
 	path[len(path) - 1] = fname
 	imgPath := strings.Join(path, "/")
 
-	log.Println(fname)
-
-	bucket := GetBucket()
-	blob, err := GetImage(bucket, imgPath)
-	if err != nil {
-		WriteNotFound(w)
-		return
-	}
-	image := Resize(uint(width), uint(height), blob)
-
-	w.Write(image)
-}
-
-func ParseParam(p string) {
-
+	return width, height, imgPath
 }
 
 func WriteNotFound(w http.ResponseWriter) {
