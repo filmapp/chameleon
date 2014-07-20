@@ -32,7 +32,7 @@ func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Reque
 	w.Write(image)
 }
 
-// @args p [string] 100x100
+// @args p [string] image/Bs3iSswCIAE075C.500x500.jpg
 func ParsePath(p string) (int, int, string) {
 	path := strings.Split(p, "/")
 	name := path[len(path) - 1]
@@ -46,6 +46,7 @@ func ParsePath(p string) (int, int, string) {
 	return width, height, imgPath
 }
 
+// @args p [string] 100x100
 func ParseSizeParam(p string) (int, int) {
 	sizeArr := strings.Split(p, "x")
 	width, _ := strconv.Atoi(sizeArr[0])
