@@ -21,15 +21,17 @@ func main() {
 
 func GetResizedImage(params martini.Params, w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(params["_1"], "/")
-	sizeParam := path[0]
+	name := path[len(path) - 1]
+	nameArr := strings.Split(name, ".")
+	sizeParam := nameArr[1]
 	sizeArr := strings.Split(sizeParam, "x")
 	width, _ := strconv.Atoi(sizeArr[0])
 	height, _ := strconv.Atoi(sizeArr[1])
+	fname := nameArr[0] + "." + nameArr[2]
+	path[len(path) - 1] = fname
+	imgPath := strings.Join(path, "/")
 
-	imgPathArr := path[1:len(path)]
-	imgPath := strings.Join(imgPathArr, "/")
-
-	log.Println(imgPath)
+	log.Println(fname)
 
 	bucket := GetBucket()
 	blob, err := GetImage(bucket, imgPath)
