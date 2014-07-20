@@ -1,0 +1,4 @@
+gom "github.com/gographics/imagick/imagick"
+gom "github.com/go-martini/martini"
+gom "github.com/crowdmob/goamz/aws"
+gom "github.com/crowdmob/goamz/s3"
