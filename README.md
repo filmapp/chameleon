@@ -8,6 +8,6 @@ A dynamic image resizing server.
 usage
 ---
 
-1. setup envitonment variable `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+1. setup environment variable `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 2. `gom install`
 3. `gom build` to obtain a binary.
