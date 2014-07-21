@@ -3,8 +3,7 @@ package mofu
 import(
 	"net/http"
 	"github.com/go-martini/martini"
-	
-	"github.com/gographics/imagick/imagick"
+
 	"github.com/crowdmob/goamz/s3"
 )
 
@@ -14,16 +13,16 @@ func StartServer() {
 	bucket := GetBucket()
 	m.Map(bucket)
 
-	wand := GetWand()
-	m.Map(wand)
-	defer DestroyWand(wand)
+	s := NewImageService()
+	m.Map(s)
+	defer s.Destroy()
 
 	m.Get("/**", RenderResizedImage)
 
 	m.Run()
 }
 
-func RenderResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params martini.Params, w http.ResponseWriter, r *http.Request) {
+func RenderResizedImage(bucket *s3.Bucket, s *ImageService, params martini.Params, w http.ResponseWriter, r *http.Request) {
 	width, height, path := ParsePath(params["_1"])
 
 	blob, err := bucket.Get(path)
@@ -31,7 +30,7 @@ func RenderResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params mart
 		RenderNotFound(w)
 		return
 	}
-	image := Resize(wand, uint(width), uint(height), blob)
+	image := s.Resize(uint(width), uint(height), blob)
 
 	w.Write(image)
 }

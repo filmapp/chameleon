@@ -4,19 +4,24 @@ import(
 	"github.com/gographics/imagick/imagick"
 )
 
-func GetWand() *imagick.MagickWand {
+type ImageService struct {
+	Wand *imagick.MagickWand
+}
+
+func NewImageService() *ImageService {
 	imagick.Initialize()
 	wand := imagick.NewMagickWand()
-	return wand
+	return &ImageService{Wand: wand}
 }
 
-func DestroyWand(wand *imagick.MagickWand) {
-	imagick.Terminate()
-	wand.Destroy()
-}
-
-func Resize(wand *imagick.MagickWand, w, h uint, blob []byte) []byte {
+func (s *ImageService) Resize(w, h uint, blob []byte) []byte {
+	wand := s.Wand
 	_ = wand.ReadImageBlob(blob)
 	wand.ResizeImage(w, h, imagick.FILTER_LANCZOS2_SHARP, 1)
 	return wand.GetImageBlob()
+}
+
+func (s *ImageService) Destroy() {
+	imagick.Terminate()
+	s.Wand.Destroy()
 }
