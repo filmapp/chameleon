@@ -30,7 +30,7 @@ func RenderResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params mart
 
 	blob, err := bucket.Get(path)
 	if err != nil {
-		WriteNotFound(w)
+		RenderNotFound(w)
 		return
 	}
 	image := mofu.Resize(wand, uint(width), uint(height), blob)
@@ -38,7 +38,7 @@ func RenderResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params mart
 	w.Write(image)
 }
 
-func WriteNotFound(w http.ResponseWriter) {
+func RenderNotFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("404"))
 }
