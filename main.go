@@ -3,7 +3,6 @@ package main
 import(
 	"github.com/gographics/imagick/imagick"
 	"github.com/go-martini/martini"
-	"github.com/crowdmob/goamz/aws"
 	"github.com/crowdmob/goamz/s3"
 	"strings"
 	"strconv"
@@ -15,7 +14,7 @@ import(
 func main() {
 	m := martini.Classic()
 
-	bucket := GetBucket()
+	bucket := mofu.GetBucket()
 	m.Map(bucket)
 
 	wand := mofu.GetWand()
@@ -38,7 +37,7 @@ func GetResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params martini
 		WriteNotFound(w)
 		return
 	}
-	image := Resize(wand, uint(width), uint(height), blob)
+	image := mofu.Resize(wand, uint(width), uint(height), blob)
 
 	w.Write(image)
 }
@@ -68,20 +67,4 @@ func ParseSizeParam(p string) (int, int) {
 func WriteNotFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("404"))
-}
-
-func GetBucket() *s3.Bucket {
-	auth, err := aws.EnvAuth()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	s := s3.New(auth, aws.USEast)
-	return s.Bucket("filmapp-development")
-}
-
-func Resize(wand *imagick.MagickWand, w, h uint, blob []byte) []byte {
-	_ = wand.ReadImageBlob(blob)
-	wand.ResizeImage(w, h, imagick.FILTER_LANCZOS2_SHARP, 1)
-	return wand.GetImageBlob()
 }
