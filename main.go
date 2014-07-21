@@ -1,12 +1,13 @@
 package main
 
 import(
-	"github.com/gographics/imagick/imagick"
-	"github.com/go-martini/martini"
-	"github.com/crowdmob/goamz/s3"
-	"log"
-	"net/http"
 	"github.com/kaiinui/mofu/lib"
+
+	"net/http"
+	"github.com/go-martini/martini"
+
+	"github.com/gographics/imagick/imagick"
+	"github.com/crowdmob/goamz/s3"
 )
 
 func main() {
@@ -17,21 +18,18 @@ func main() {
 
 	wand := mofu.GetWand()
 	m.Map(wand)
-	defer imagick.Terminate()
-	defer wand.Destroy()
+	defer mofu.DestroyWand(wand)
 
-	m.Get("/**", GetResizedImage)
+	m.Get("/**", RenderResizedImage)
 
 	m.Run()
 }
 
-func GetResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params martini.Params, w http.ResponseWriter, r *http.Request) {
+func RenderResizedImage(bucket *s3.Bucket, wand *imagick.MagickWand, params martini.Params, w http.ResponseWriter, r *http.Request) {
 	width, height, path := mofu.ParsePath(params["_1"])
 
-	log.Println("getting " + path)
 	blob, err := bucket.Get(path)
 	if err != nil {
-		log.Println(err)
 		WriteNotFound(w)
 		return
 	}

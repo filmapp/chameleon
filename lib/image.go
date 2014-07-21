@@ -10,6 +10,11 @@ func GetWand() *imagick.MagickWand {
 	return wand
 }
 
+func DestroyWand(wand *imagick.MagickWand) {
+	imagick.Terminate()
+	wand.Destroy()
+}
+
 func Resize(wand *imagick.MagickWand, w, h uint, blob []byte) []byte {
 	_ = wand.ReadImageBlob(blob)
 	wand.ResizeImage(w, h, imagick.FILTER_LANCZOS2_SHARP, 1)
