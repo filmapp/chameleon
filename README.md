@@ -15,3 +15,8 @@ usage
 3. `gom build` to obtain a binary.
 
 or just `go run main.go` to start listen `:3000`.
+
+Related Projects
+---
+
+https://github.com/ReshNesh/pixlserv
